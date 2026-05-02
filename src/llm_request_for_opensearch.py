@@ -26,7 +26,7 @@ def request_llm(candidates):
 1. Самостоятельно определить какие поля есть в тексте
 2. Построить подходящую JSON-схему
 3. Вернуть ТОЛЬКО валидный JSON объект — без markdown, без пояснений
-
+4. Если видишь что в тексте больше чем 3 знака переноса строки \n\n\n то нужно рассматривать это как следующее резюме
 === ЖЁСТКИЕ ПРАВИЛА для совместимости с OpenSearch ===
 
 ТИПЫ ДАННЫХ:
@@ -63,20 +63,22 @@ def request_llm(candidates):
 ]
 НЕ используй формат {"index": ...} — только чистый массив.
 Если не хватает информации оставляй "null"
-В ключ resume_text добавь короткий текст о кандидате со всеми кейвордами
+В ключ resume_text добавь короткий текст о кандидате со всеми кейвордами. Ключ resume_text должен быть у каждого кандидата
 === ПРИМЕР ВЫВОДА ===
 {"index": {"_id": "1"}}
 {"name": "Дмитрий Волков", "age": 29, "experience": {"years": 4, "position": "Data Analyst", "industry": "banking"}, "skills": {"python": ["pandas", "matplotlib", "seaborn"], "databases": ["PostgreSQL", "Redshift"]}, "achievements": ["Автоматизировал отчётность — сократил время подготовки на 70%"], "english_level": "B1", "applied_at": "2026-04-28"}
 """
 
     data = {
-    "model": "Qwen/Qwen3-8B-AWQ",
+    "model": "Qwen/Qwen3-14B-AWQ",
     "messages": [
       {"role": "system", "content": system_prompt},
       {"role": "user", "content": candidates}
     ],
     "max_tokens": 8192,
-    "temperature": 0.7,
+    "temperature": 0,
+    "top_p": 1.0,
+    "repetition_penalty": 1.05,
     "chat_template_kwargs": {"enable_thinking": False}
     }
 

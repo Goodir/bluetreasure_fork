@@ -18,7 +18,7 @@ def request_llm_final(vacancy, candidates):
       {"role": "system", "content": system_prompt},
       {"role": "user", "content": candidates}
     ],
-    "max_tokens": 8192,
+    "max_tokens": 16384,
     "temperature": 0.7,
     "chat_template_kwargs": {"enable_thinking": False}
     }

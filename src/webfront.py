@@ -5,8 +5,11 @@ from .save_vacanсy import create_index
 from .llm_request_for_opensearch import request_llm
 from .list_objects import show_objects
 import time
+import redis
+import json
 webstart = Blueprint('webstart', __name__)
 
+r = redis.Redis(host='redis', port=6379, decode_responses=True)
 @webstart.route('/', methods=['GET'])
 def start_page():
     return render_template('start.html')
@@ -21,9 +24,18 @@ def start_page_post():
             flash('Введите данные вакансии и/или данные кандидата', 'error')
             return redirect(url_for('webstart.start_page'))
         session.permanent = True
-        session['session_id'] = str(uuid.uuid4())
+        sess_id = str(uuid.uuid4())
+        session['session_id'] = sess_id
+        # Запись значений в Redis
+        r.setex(
+            name=f"result:{sess_id}",
+            time=900,
+            value=cand_info,
+
+        )
         session['vacancy_text'] = vacancy_text
-        session['cand_info'] = cand_info
+        # session['cand_info'] = cand_info
+
         return redirect(url_for('webstart.request_info'))
     return redirect(url_for('webstart.start_page'))
 
@@ -32,8 +44,13 @@ def start_page_post():
 def request_info():
     if request.method == 'GET':
         vacancy_text = session['vacancy_text']
-        cand_info = session['cand_info']
+        # cand_info = session['cand_info']
+        cand_info = r.get(f"result:{session['session_id']}")
+        print(f"Инфо о кандидате: {cand_info}")
         if not session.get('session_id'):
+            return redirect(url_for('webstart.start_page'))
+        if not cand_info:
+            flash("Данные отсутствуют", 'error')
             return redirect(url_for('webstart.start_page'))
         create_index(vacancy_text)
         result = request_llm(cand_info)

@@ -5,6 +5,11 @@ services:
       dockerfile: Dockerfile
     volumes:
       - socket_volume:/tmp
+    networks:
+      - app_net
+    depends_on:
+      - opensearch
+      - redis
 
   nginx:
     build:
@@ -16,6 +21,8 @@ services:
       - socket_volume:/tmp
     depends_on:
       - uwsgi
+    networks:
+      - app_net
 
   opensearch:
     build:
@@ -26,9 +33,20 @@ services:
     ports:
       - 9200:9200
       - 9600:9600
-    depends_on:
-      - uwsgi
-      - nginx
+    networks:
+      - app_net
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+
+    networks:
+      - app_net
 
 volumes:
   socket_volume:
+
+networks:
+  app_net:
+    driver: bridge
