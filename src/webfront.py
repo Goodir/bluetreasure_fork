@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, flash, redirect, url_for,
 import uuid
 from .llm_request import request_llm_final
 from .save_vacanсy import create_index
-from .llm_request_for_opensearch import request_llm
+from .llm_request_for_opensearch import request_llm, split_vacancies, check_opensearch_index
 from .list_objects import show_objects
 import time
 import redis
@@ -46,15 +46,15 @@ def request_info():
         vacancy_text = session['vacancy_text']
         # cand_info = session['cand_info']
         cand_info = r.get(f"result:{session['session_id']}")
-        print(f"Инфо о кандидате: {cand_info}")
         if not session.get('session_id'):
             return redirect(url_for('webstart.start_page'))
         if not cand_info:
             flash("Данные отсутствуют", 'error')
             return redirect(url_for('webstart.start_page'))
         create_index(vacancy_text)
-        result = request_llm(cand_info)
-        print(result)
+        cand_list = split_vacancies(cand_info)
+        check_opensearch_index()
+        result = request_llm(cand_list)
         time.sleep(2)
         if result == 0:
             flash('Ошибка подключения к серверу', 'error')
