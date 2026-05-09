@@ -1,18 +1,8 @@
 from ..parsers.candidate_parser import *
 from ..embeddings.make_embed import * 
+from ..storage.opensearch_candidates import *
+from ..storage.opensearch_client import *
 
-
-def parse_data_full(data_full: dict) -> dict:
-    parsed = {}
-
-    for filename, data in data_full.items():
-        candidate = parse_resume(data)
-        candidate["source_file"] = filename
-        candidate['resume_text'] = build_resume_text(candidate)
-        candidate['resume_vector'] = embed_resume(candidate['resume_text'])
-        parsed[filename] = candidate
-
-    return parsed
 
 
 def prepare_candidate_doc(parsed: dict, source_file: str) -> dict:
@@ -23,26 +13,47 @@ def prepare_candidate_doc(parsed: dict, source_file: str) -> dict:
     return doc
 
 
+def parse_data_full(data_full: dict) -> dict:
+    parsed = {}
+
+    for filename, data in data_full.items():
+        candidate = parse_resume(data)
+        candidate = prepare_candidate_doc(candidate, filename)
+        parsed[filename] = candidate
+
+    return parsed
+
+
+
 def ingest_candidate_pdfs(files) -> dict:
     docs = {}
     loaded = 0
     errors = 0
+    duplicates = 0
+
+    client = get_opensearch_client()
 
     for file in files:
         try:
             data = read_resume_pdf_raw(file)
             parsed = parse_resume(data)
             doc = prepare_candidate_doc(parsed, file.filename)
+
+            if client.exists(index="candidates", id=file.filename):
+                duplicates += 1
+                continue
+
             docs[file.filename] = doc
             loaded += 1
+
         except Exception:
             errors += 1
 
     if docs:
-        bulk_index_parsed_candidates(client, docs, index_name="candidates")
+        bulk_index_candidates(client, docs, index_name="candidates")
 
     return {
         "loaded": loaded,
         "errors": errors,
-        "duplicates": 0
+        "duplicates": duplicates,
     }
