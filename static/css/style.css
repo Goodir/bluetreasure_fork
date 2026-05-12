@@ -73,6 +73,810 @@ header {
     line-height: 1.5;
 }
 
+/* ── Меню ── */
+.menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 32px 40px;
+    box-sizing: border-box;
+    width: 98%;
+}
+
+/* ── Карточка-ссылка ── */
+.card {
+    background: #ffffff;
+    width: 98%;
+    max-width: 400px;
+    border: 1px solid #d0e4f5;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 102, 179, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #1a3a5c;
+    font-family: 'FreeSet', Arial, sans-serif;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.card:hover {
+    background: #f7fbff;
+    box-shadow: 0 8px 30px rgba(0, 102, 179, 0.15);
+}
+
+  .topbar {
+        margin-bottom: 20px;
+    }
+
+    .page_title {
+        color: #0066B3;
+        font-size: 28px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        padding: 0 40px 8px;
+        margin: 24px 0 16px;
+    }
+
+    .layout {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 24px;
+        padding: 0 40px 40px;
+        box-sizing: border-box;
+        width: 98%;
+    }
+
+    /* ── Flash-сообщения ── */
+    .flash {
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin: 0 40px 16px;
+        font-size: 14px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .flash.success {
+        background: #eaf7ea;
+        border: 1px solid #b9dfb9;
+        color: #1a6b1a;
+    }
+
+    .flash.error {
+        background: #fdecec;
+        border: 1px solid #efb3b3;
+        color: #a12c2c;
+    }
+
+    /* ── Боксы (карточки) ── */
+    .box {
+        background: #ffffff;
+        border: 1px solid #d0e4f5;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 20px rgba(0, 102, 179, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .box h2 {
+        color: #0066B3;
+        font-size: 22px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        margin: 0 0 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e8f2fc;
+    }
+
+    /* ── Форма ── */
+    .box label {
+        font-size: 14px;
+        color: #555;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .box textarea {
+        width: 100%;
+        min-height: 260px;
+        box-sizing: border-box;
+        margin-top: 8px;
+        padding: 14px 16px;
+        border: 1.5px solid #c8dff2;
+        border-radius: 10px;
+        font-size: 15px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        color: #222;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        line-height: 1.6;
+    }
+
+    .box textarea:focus {
+        border-color: #0066B3;
+        box-shadow: 0 0 0 3px rgba(0, 102, 179, 0.12);
+    }
+
+    .box textarea::placeholder {
+        color: #aac4de;
+        font-size: 14px;
+    }
+
+    .box input[type="file"] {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #555;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .box button[type="submit"] {
+        margin-top: 20px;
+        width: 100%;
+        padding: 16px;
+        background: #0066B3;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: background 0.2s ease;
+    }
+
+    .box button[type="submit"]:hover {
+        background: #0055a0;
+    }
+
+    /* ── Список вакансий ── */
+    .vacancy-item {
+        padding: 14px 0;
+        border-bottom: 1px solid #e8f2fc;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .vacancy-item:last-child {
+        border-bottom: none;
+    }
+
+    .vacancy-item strong {
+        font-size: 16px;
+        color: #0066B3;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .muted {
+        color: #6a8aaa;
+        font-size: 13px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    /* ── Адаптив ── */
+    @media (max-width: 768px) {
+        .layout {
+            grid-template-columns: 1fr;
+            padding: 0 16px 32px;
+        }
+
+        .flash {
+            margin: 0 16px 16px;
+        }
+
+        .page_title {
+            padding: 0 16px 8px;
+        }
+    }
+
+/* ── File input обёртка ── */
+.file_upload_block {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file_upload_block label {
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    font-family: 'FreeSet', Arial, sans-serif;
+}
+
+/* Скрываем стандартный input */
+.file_upload_block input[type="file"] {
+    display: none;
+}
+
+/* Кастомная кнопка выбора файла */
+.file_upload_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #f0f6fd;
+    color: #0066B3;
+    border: 1.5px solid #c8dff2;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'FreeSet', Arial, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    width: fit-content;
+}
+
+.file_upload_label:hover {
+    background: #dceffe;
+    box-shadow: 0 4px 12px rgba(0, 102, 179, 0.12);
+}
+
+/* Название выбранного файла */
+.file_name {
+    font-size: 13px;
+    color: #6a8aaa;
+    font-family: 'FreeSet', Arial, sans-serif;
+    margin-top: 4px;
+}
+
+   .page_title {
+        color: #0066B3;
+        font-size: 28px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        padding: 0 40px 8px;
+        margin: 24px 0 16px;
+    }
+
+    /* ── Flash ── */
+    .flash {
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin: 0 40px 16px;
+        font-size: 14px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+    .flash.success {
+        background: #eaf7ea;
+        border: 1px solid #b9dfb9;
+        color: #1a6b1a;
+    }
+    .flash.error {
+        background: #fdecec;
+        border: 1px solid #efb3b3;
+        color: #a12c2c;
+    }
+
+    /* ── Боксы ── */
+    .box {
+        background: #ffffff;
+        border: 1px solid #d0e4f5;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 20px rgba(0, 102, 179, 0.08);
+        margin: 0 40px 24px;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .box h2 {
+        color: #0066B3;
+        font-size: 22px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        margin: 0 0 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e8f2fc;
+    }
+
+    /* ── Форма ── */
+    .box label {
+        font-size: 14px;
+        color: #555;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .box select,
+    .box input[type="number"] {
+        width: 100%;
+        max-width: 400px;
+        padding: 12px 16px;
+        border: 1.5px solid #c8dff2;
+        border-radius: 10px;
+        font-size: 15px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        color: #222;
+        outline: none;
+        background: #fff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .box select:focus,
+    .box input[type="number"]:focus {
+        border-color: #0066B3;
+        box-shadow: 0 0 0 3px rgba(0, 102, 179, 0.12);
+    }
+
+    .box button[type="submit"] {
+        margin-top: 20px;
+        padding: 14px 40px;
+        background: #0066B3;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 17px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: background 0.2s ease;
+    }
+
+    .box button[type="submit"]:hover {
+        background: #0055a0;
+    }
+
+    /* ── Превью вакансии ── */
+    .vacancy-preview {
+        white-space: pre-wrap;
+        background: #f7fbff;
+        border: 1px solid #d0e4f5;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-top: 12px;
+        font-size: 14px;
+        color: #1a3a5c;
+        line-height: 1.7;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    /* ── Кандидат ── */
+    .candidate {
+        padding: 18px 0;
+        border-bottom: 1px solid #e8f2fc;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .candidate:last-child {
+        border-bottom: none;
+    }
+
+    .candidate strong {
+        font-size: 16px;
+        color: #0066B3;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .muted {
+        color: #6a8aaa;
+        font-size: 13px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        line-height: 1.6;
+    }
+
+    .score {
+        margin-top: 4px;
+        font-size: 15px;
+        color: #1a3a5c;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    /* ── Текст резюме ── */
+    .resume {
+        white-space: pre-wrap;
+        background: #f7fbff;
+        border: 1px solid #d0e4f5;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #3a5a78;
+        line-height: 1.7;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    /* ── Теги ── */
+    .tag_matched {
+        display: inline-block;
+        background: #d4f0d4;
+        color: #1a6b1a;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 2px 3px 2px 0;
+    }
+
+    .tag_missed {
+        display: inline-block;
+        background: #fdecec;
+        color: #a12c2c;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 2px 3px 2px 0;
+    }
+
+    /* ── Адаптив ── */
+    @media (max-width: 768px) {
+        .box {
+            margin: 0 16px 20px;
+            padding: 20px 16px;
+        }
+        .flash {
+            margin: 0 16px 12px;
+        }
+        .page_title {
+            padding: 0 16px 8px;
+        }
+        .box select,
+        .box input[type="number"] {
+            max-width: 100%;
+        }
+    }
+
+   .page_title {
+        color: #0066B3;
+        font-size: 28px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        padding: 0 40px 8px;
+        margin: 24px 0 16px;
+    }
+
+    /* ── Flash ── */
+    .flash {
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin: 0 40px 16px;
+        font-size: 14px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+    .flash.success {
+        background: #eaf7ea;
+        border: 1px solid #b9dfb9;
+        color: #1a6b1a;
+    }
+    .flash.error {
+        background: #fdecec;
+        border: 1px solid #efb3b3;
+        color: #a12c2c;
+    }
+
+    /* ── Бокс формы ── */
+    .box {
+        background: #ffffff;
+        border: 1px solid #d0e4f5;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 20px rgba(0, 102, 179, 0.08);
+        margin: 0 40px 24px;
+    }
+
+    .box label {
+        font-size: 14px;
+        color: #555;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    /* Скрываем стандартный input */
+    .box input[type="file"] {
+        display: none;
+    }
+
+    .file_upload_label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: #f0f6fd;
+        color: #0066B3;
+        border: 1.5px solid #c8dff2;
+        border-radius: 10px;
+        font-size: 15px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+        width: fit-content;
+        margin-top: 4px;
+    }
+
+    .file_upload_label:hover {
+        background: #dceffe;
+        box-shadow: 0 4px 12px rgba(0, 102, 179, 0.12);
+    }
+
+    .file_name {
+        display: block;
+        margin-top: 8px;
+        font-size: 13px;
+        color: #6a8aaa;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .box button[type="submit"] {
+        margin-top: 20px;
+        padding: 14px 40px;
+        background: #0066B3;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 17px;
+        font-family: 'FreeSet', Arial, sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: background 0.2s ease;
+        display: block;
+        max-width: 300px;
+    }
+
+    .box button[type="submit"]:hover {
+        background: #0055a0;
+    }
+
+    /* ── Отчёт ── */
+    .report {
+        background: #ffffff;
+        border: 1px solid #d0e4f5;
+        border-radius: 16px;
+        padding: 28px 32px;
+        box-shadow: 0 4px 20px rgba(0, 102, 179, 0.08);
+        margin: 0 40px 24px;
+        font-family: 'FreeSet', Arial, sans-serif;
+    }
+
+    .report h3 {
+        color: #0066B3;
+        font-size: 18px;
+        margin: 0 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e8f2fc;
+    }
+
+    .report > div {
+        font-size: 15px;
+        color: #1a3a5c;
+        padding: 6px 0;
+        border-bottom: 1px solid #f0f6fd;
+        line-height: 1.6;
+    }
+
+    .report > div:last-child {
+        border-bottom: none;
+    }
+
+    .report strong {
+        color: #0066B3;
+    }
+
+    /* ── Список ошибок ── */
+    .report ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .report ul li {
+        font-size: 14px;
+        color: #3a5a78;
+        background: #fdecec;
+        border: 1px solid #efb3b3;
+        border-radius: 8px;
+        padding: 10px 14px;
+        line-height: 1.5;
+    }
+
+    .report ul li strong {
+        color: #a12c2c;
+    }
+
+    /* ── Адаптив ── */
+    @media (max-width: 768px) {
+        .box, .report {
+            margin: 0 16px 20px;
+            padding: 20px 16px;
+        }
+        .flash {
+            margin: 0 16px 12px;
+        }
+        .page_title {
+            padding: 0 16px 8px;
+        }
+    }
+
+/* ── File upload кнопка ── */
+input[type="file"] {
+    display: none;
+}
+
+.file_upload_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #f0f6fd;
+    color: #0066B3;
+    border: 1.5px solid #c8dff2;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'FreeSet', Arial, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    width: fit-content;
+    margin-top: 4px;
+}
+
+.file_upload_label:hover {
+    background: #dceffe;
+    box-shadow: 0 4px 12px rgba(0, 102, 179, 0.12);
+}
+
+.file_name {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #6a8aaa;
+    font-family: 'FreeSet', Arial, sans-serif;
+}
+
+/* ── Бокс (обёртка с рамкой) ── */
+.box {
+    background: #ffffff;
+    border: 1px solid #d0e4f5;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 102, 179, 0.08);
+    margin: 0 40px 24px;
+}
+
+/* ── Отчёт ── */
+.report {
+    background: #ffffff;
+    border: 1px solid #d0e4f5;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 20px rgba(0, 102, 179, 0.08);
+    margin: 0 40px 24px;
+    font-family: 'FreeSet', Arial, sans-serif;
+}
+
+.report h3 {
+    color: #0066B3;
+    font-size: 18px;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e8f2fc;
+}
+
+.report > div {
+    font-size: 15px;
+    color: #1a3a5c;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f6fd;
+}
+
+.report > div:last-child {
+    border-bottom: none;
+}
+
+.report strong {
+    color: #0066B3;
+}
+
+.report ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.report ul li {
+    font-size: 14px;
+    color: #3a5a78;
+    background: #fdecec;
+    border: 1px solid #efb3b3;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.report ul li strong {
+    color: #a12c2c;
+}
+
+.llm_response_body h3 {
+    color: #0066B3;
+    font-size: 17px;
+    margin: 20px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e8f2fc;
+}
+
+.llm_response_body strong {
+    color: #1a3a5c;
+}
+
+.llm_response_body ul {
+    padding-left: 20px;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.llm_response_body ul li {
+    font-size: 14px;
+    color: #1a3a5c;
+    line-height: 1.6;
+    max-width: 100%;
+}
+
+.llm_response_body hr {
+    border: none;
+    border-top: 2px solid #e8f2fc;
+    margin: 20px 0;
+}
+
+.llm_response_body p {
+    margin: 8px 0;
+    max-width: 100%;
+}
+
+
+
+
+/* ── Заголовок карточки ── */
+.card-title {
+    color: #0066B3;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'FreeSet', Arial, sans-serif;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e8f2fc;
+    margin-bottom: 4px;
+}
+
+/* ── Описание карточки ── */
+.card > div:not(.card-title) {
+    font-size: 15px;
+    color: #3a5a78;
+    line-height: 1.65;
+}
+
+/* ── Адаптив ── */
+@media (max-width: 768px) {
+    .menu {
+        flex-direction: column;
+        padding: 20px 16px;
+    }
+
+    .card {
+        min-width: unset;
+    }
+}
+
 .forms_cont {
     padding: 32px 40px;
     box-sizing: border-box;
@@ -249,7 +1053,7 @@ header {
     box-shadow: 0 4px 12px rgba(0, 102, 179, 0.12);
 }
 
-/* ── Источник данных ── */
+
     .db_badge {
       display: flex;
       align-items: center;
@@ -312,7 +1116,7 @@ header {
       word-wrap: break-word;
     }
 
-    /* ── Кандидаты ── */
+
     .candidates_header {
       display: flex;
       align-items: center;
@@ -399,7 +1203,7 @@ header {
       margin-top: 4px;
     }
 
-    /* ── Кнопка назад ── */
+
     .back_btn_cont {
       text-align: center;
       padding: 24px 0 48px;

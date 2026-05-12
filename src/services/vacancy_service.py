@@ -10,6 +10,7 @@ from ..storage.opensearch_vacancies import (
     index_vacancy,
     list_vacancies as storage_list_vacancies,
     get_vacancy_by_id as storage_get_vacancy_by_id,
+    clear_vacancies_index as storage_clear_vacancies_index,
 )
 
 
@@ -112,3 +113,8 @@ def list_vacancies() -> list[dict]:
 def get_vacancy_by_id(vacancy_id: str) -> dict | None:
     client = get_opensearch_client()
     return storage_get_vacancy_by_id(client, vacancy_id)
+
+
+def clear_vacancies_index() -> bool:
+    client = get_opensearch_client()
+    return storage_clear_vacancies_index(client)

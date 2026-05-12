@@ -2,105 +2,21 @@ import numpy as np
 import re
 from typing import List, Dict, Any
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-
-TERM_MAP = {
-    "golang": "go",
-    "питон": "python",
-    "джава": "java",
-    "яваскрипт": "javascript",
-    "js": "javascript",
-    "тайпскрипт": "typescript",
-    "ts": "typescript",
-    "микросервис": "microservices",
-    "микросервисный": "microservices",
-    "microservice": "microservices",
-    "лидерство": "lead",
-    "лидер": "lead",
-    "тимлид": "lead",
-    "тимлида": "lead",
-    "тимлидер": "lead",
-    "руководитель": "lead",
-    "менторинг": "mentoring",
-    "наставничество": "mentoring",
-    "постгрес": "postgresql",
-    "postgres": "postgresql",
-    "монго": "mongodb",
-    "mongo": "mongodb",
-    "эластик": "elasticsearch",
-    "elastic": "elasticsearch",
-    "кубернетес": "kubernetes",
-    "кубернетёс": "kubernetes",
-    "кубер": "kubernetes",
-    "k8s": "kubernetes",
-    "докер": "docker",
-    "оптимизация": "optimization",
-    "проектирование": "design",
-    "архитектура": "architecture",
-    "архитектурный": "architecture",
-    "тестирование": "testing",
-    "мониторинг": "monitoring",
-    "развёртывание": "deploy",
-    "деплой": "deploy",
-    "deployment": "deploy",
-    "разработка": "development",
-    "бэкенд": "backend",
-    "бекенд": "backend",
-    "фронтенд": "frontend",
-    "фулстек": "fullstack",
-    "full-stack": "fullstack",
-    "скрам": "scrum",
-    "аджайл": "agile",
-    "канбан": "kanban",
-    "распределённый": "distributed",
-    "высоконагруженный": "highload",
-    "масштабируемость": "scalability",
-    "производительность": "performance",
-    "отказоустойчивость": "fault_tolerance",
-}
-
-
-def normalize_tags(tags: list[str]) -> set[str]:
-    result = set()
-
-    for tag in tags:
-        if not isinstance(tag, str):
-            continue
-
-        tag = tag.lower().strip()
-        if not tag:
-            continue
-
-        # сначала режем по явным разделителям
-        parts = re.split(r"[,;/|]+", tag)
-
-        for part in parts:
-            part = part.strip()
-            if not part:
-                continue
-
-            # если это длинный кусок текста, ещё режем на слова
-            words = re.findall(r"[a-zа-я0-9\.\+#\-]+", part, flags=re.IGNORECASE)
-
-            if len(words) <= 1:
-                token = TERM_MAP.get(part, part)
-                if len(token) > 1:
-                    result.add(token)
-            else:
-                for word in words:
-                    word = TERM_MAP.get(word, word)
-                    if len(word) > 1:
-                        result.add(word)
-
-    return result
+from ..taxonomy import *
 
 
 def extract_vacancy_tags(vacancy: dict) -> list[str]:
     return vacancy.get("tags", []) or []
 
 
+
 def extract_candidate_tags(candidate: dict) -> list[str]:
-    return candidate.get("skills", {}).get("tools", []) or []
+    skills_tags = candidate.get("skills", {}).get("tools", []) or []
+    if skills_tags:
+        return skills_tags
+
+    resume_text = candidate.get("resume_text", "") or ""
+    return extract_tags_from_text(resume_text)
 
 
 def score_jaccard_fast(vacancy_tags: List[str], resume_tags: List[str]) -> Dict[str, Any]:
@@ -192,25 +108,12 @@ def calculate_final_ranking(
     cosine_score: float,
     jaccard_score: float,
     tfidf_score: float,
-    required_exp: float,
-    candidate_exp: float,
     use_tag_metrics: bool = True,
 ) -> dict:
-    metrics = [cosine_score]
-
-    if use_tag_metrics:
-        metrics.extend([jaccard_score, tfidf_score])
-
-    ensemble_score = sum(metrics) / len(metrics)
-
-    modifier = 1.0
-    if required_exp and required_exp > 0:
-        if candidate_exp < required_exp:
-            modifier = 0.75
-        elif candidate_exp >= required_exp + 2.0:
-            modifier = 1.15
-
-    final_score = min(round(ensemble_score * modifier, 4), 1.0)
+    if not use_tag_metrics:
+        final_score = round(cosine_score, 4)
+    else:
+        final_score = round((cosine_score + jaccard_score + tfidf_score) / 3, 4)
 
     return {
         "final_score": final_score,
@@ -219,11 +122,6 @@ def calculate_final_ranking(
             "jaccard_simple": round(jaccard_score, 4),
             "jaccard_tfidf": round(tfidf_score, 4),
         },
-        "experience": {
-            "required_years": required_exp,
-            "candidate_years": candidate_exp,
-            "applied_modifier": modifier,
-        }
     }
 
 
@@ -235,18 +133,15 @@ def cosine_from_vectors(v1: list[float], v2: list[float]) -> float:
 
 def rerank_candidates_rule_based(vacancy: dict, candidates: list[dict]) -> list[dict]:
     vacancy_tags = extract_vacancy_tags(vacancy)
-    required_years = float(vacancy.get("required_years") or 0.0)
     vacancy_vector = vacancy.get("vacancy_vector") or []
-
     resumes_tags_batch = [extract_candidate_tags(candidate) for candidate in candidates]
     tfidf_results = score_tfidf_batch(vacancy_tags, resumes_tags_batch)
 
     ranked = []
-    use_tag_metrics = bool(vacancy_tags)
+    use_tag_metrics = bool(normalize_tags(vacancy_tags))
 
     for i, candidate in enumerate(candidates):
         candidate_tags = extract_candidate_tags(candidate)
-        candidate_exp = float(candidate.get("experience", {}).get("years") or 0.0)
         candidate_vector = candidate.get("resume_vector") or []
 
         cosine_score = cosine_from_vectors(vacancy_vector, candidate_vector)
@@ -257,8 +152,6 @@ def rerank_candidates_rule_based(vacancy: dict, candidates: list[dict]) -> list[
             cosine_score=cosine_score,
             jaccard_score=jaccard_result["score"],
             tfidf_score=tfidf_score,
-            required_exp=required_years,
-            candidate_exp=candidate_exp,
             use_tag_metrics=use_tag_metrics,
         )
 

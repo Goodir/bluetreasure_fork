@@ -100,3 +100,7 @@ def list_vacancies(client, size: int = 100) -> list[dict]:
 
 def search_vacancies(client, query_body: dict) -> list[dict]:
     return search_documents(client, VACANCY_INDEX, query_body)
+
+
+def clear_vacancies_index(client) -> bool:
+    return delete_index_if_exists(client, VACANCY_INDEX)

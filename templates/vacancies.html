@@ -1,76 +1,96 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Вакансии</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 1100px; margin: 30px auto; line-height: 1.4; }
-        .topbar { margin-bottom: 20px; }
-        .layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
-        .box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #fafafa; }
-        textarea { width: 100%; min-height: 260px; box-sizing: border-box; }
-        input[type="file"] { margin-top: 8px; }
-        button { margin-top: 12px; padding: 10px 16px; cursor: pointer; }
-        .flash { padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; }
-        .flash.success { background: #eaf7ea; border: 1px solid #b9dfb9; }
-        .flash.error { background: #fdecec; border: 1px solid #efb3b3; }
-        .vacancy-item { padding: 12px 0; border-bottom: 1px solid #e5e5e5; }
-        .muted { color: #666; font-size: 14px; }
-    </style>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Вакансии. Bluetreasure HR system</title>
 </head>
 <body>
-    <div class="topbar">
-        <a href="{{ url_for('webstart.start_page') }}">← На главную</a>
+  <header>
+    <div class="logo">
+      <img src="../static/gazprom-neft-logo-eng.svg" alt="GazProm Neft Logo">
+    </div>
+    <div class="title">Bluetreasure HR system</div>
+  </header>
+
+  <h1 class="page_title">База вакансий</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="layout">
+    <div class="box">
+      <h2>Добавить новую вакансию</h2>
+
+      <form method="POST" enctype="multipart/form-data">
+        <div>
+          <label for="vacancy_text"><strong>Текст вакансии</strong></label>
+          <textarea id="vacancy_text" name="vacancy_text" placeholder="Вставь сюда текст вакансии"></textarea>
+        </div>
+
+        <div class="file_upload_block">
+          <label>Или PDF вакансии</label>
+
+          <label class="file_upload_label" for="vacancy_pdf">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19
+                       a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+            Выбрать PDF
+          </label>
+
+          <input id="vacancy_pdf" type="file" name="vacancy_pdf" accept=".pdf">
+          <span class="file_name" id="file_name_display">Файл не выбран</span>
+        </div>
+
+        <button type="submit">Сохранить вакансию</button>
+      </form>
     </div>
 
-    <h1>База вакансий</h1>
+    <div class="box">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px;">
+        <h2 style="margin:0;">Уже загруженные вакансии</h2>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
+        <form action="{{ url_for('webstart.clear_vacancies') }}" method="POST" style="margin:0;">
+          <button type="submit" class="submit_btn">Очистить вакансии</button>
+        </form>
+      </div>
+
+      {% if vacancies %}
+        {% for vacancy in vacancies %}
+          <div class="vacancy-item">
+            <div><strong>{{ vacancy.title or "Без названия" }}</strong></div>
+
+            <div class="muted">
+              {% if vacancy.company %}{{ vacancy.company }}{% endif %}
+              {% if vacancy.experience_level %} • {{ vacancy.experience_level }}{% endif %}
+              {% if vacancy.format %} • {{ vacancy.format }}{% endif %}
+            </div>
+
+            <div class="muted">id: {{ vacancy._id }}</div>
+          </div>
         {% endfor %}
+      {% else %}
+        <div class="muted">В индексе vacancy пока нет документов.</div>
       {% endif %}
-    {% endwith %}
-
-    <div class="layout">
-        <div class="box">
-            <h2>Добавить новую вакансию</h2>
-
-            <form method="POST" enctype="multipart/form-data">
-                <div>
-                    <label for="vacancy_text"><strong>Текст вакансии</strong></label>
-                    <textarea id="vacancy_text" name="vacancy_text" placeholder="Вставь сюда текст вакансии"></textarea>
-                </div>
-
-                <div style="margin-top: 16px;">
-                    <label for="vacancy_pdf"><strong>Или PDF вакансии</strong></label><br>
-                    <input id="vacancy_pdf" type="file" name="vacancy_pdf" accept=".pdf">
-                </div>
-
-                <button type="submit">Сохранить вакансию</button>
-            </form>
-        </div>
-
-        <div class="box">
-            <h2>Уже загруженные вакансии</h2>
-
-            {% if vacancies %}
-                {% for vacancy in vacancies %}
-                    <div class="vacancy-item">
-                        <div><strong>{{ vacancy.title or "Без названия" }}</strong></div>
-                        <div class="muted">
-                            {% if vacancy.company %}{{ vacancy.company }}{% endif %}
-                            {% if vacancy.experience_level %} • {{ vacancy.experience_level }}{% endif %}
-                            {% if vacancy.format %} • {{ vacancy.format }}{% endif %}
-                        </div>
-                        <div class="muted">id: {{ vacancy._id }}</div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="muted">В индексе vacancy пока нет документов.</div>
-            {% endif %}
-        </div>
     </div>
+  </div>
+
+  <div class="back_btn_cont">
+    <a href="/" class="back_btn">Вернуться на главную</a>
+  </div>
+
+  <script>
+    document.getElementById('vacancy_pdf').addEventListener('change', function () {
+      const label = document.getElementById('file_name_display');
+      label.textContent = this.files.length ? this.files[0].name : 'Файл не выбран';
+    });
+  </script>
 </body>
 </html>

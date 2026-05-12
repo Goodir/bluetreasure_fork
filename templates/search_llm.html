@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Поиск лучших кандитатов. Bluetreasure HR system</title>
+
+</head>
+<body>
+<header>
+    <div class="logo">
+        <img src="../static/gazprom-neft-logo-eng.svg" alt="GazProm Neft Logo">
+    </div>
+    <div class="title">Bluetreasure HR system</div>
+</header>
+
+
+    <h1 class="page_title">Запрос на поиск лучших кандидатов через LLM</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="box">
+        <form method="POST">
+            <div style="margin-bottom: 12px;">
+                <label for="vacancy_id"><strong>Выбери вакансию</strong></label><br><br>
+                <select id="vacancy_id" name="vacancy_id" required>
+                    <option value="">-- выбрать вакансию --</option>
+                    {% for vacancy in vacancies %}
+                        <option value="{{ vacancy._id }}" {% if selected_vacancy_id == vacancy._id %}selected{% endif %}>
+                            {{ vacancy.title or "Без названия" }}
+                            {% if vacancy.company %} — {{ vacancy.company }}{% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label for="top_k"><strong>Сколько кандидатов искать</strong></label><br><br>
+                <input id="top_k" type="number" name="top_k" min="1" max="100" value="3">
+            </div>
+
+            <button type="submit">Найти кандидатов</button>
+        </form>
+    </div>
+
+
+
+<div class="back_btn_cont">
+    <a href="/" class="back_btn">Вернуться на главную</a>
+  </div>
+</body>
+</html>

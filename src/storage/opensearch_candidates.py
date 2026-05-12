@@ -7,6 +7,7 @@ from .opensearch_base import (
     search_documents,
     bulk_index_documents,
     bulk_update_documents,
+    delete_index_if_exists
 )
 
 CANDIDATES_INDEX = "candidates"
@@ -180,3 +181,6 @@ def bulk_index_candidates(client, docs: dict[str, dict]) -> int:
 
 def bulk_update_candidates(client, updates: dict[str, dict]) -> int:
     return bulk_update_documents(client, updates, CANDIDATES_INDEX)
+
+def clear_candidates_index(client) -> bool:
+    return delete_index_if_exists(client, CANDIDATES_INDEX)

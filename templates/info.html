@@ -16,22 +16,45 @@
 <main>
     <div class="main_text_block">
         <div class="main_text">
-            Ниже представлено описание лучших кандидатов для данной вакансии:
+            Ниже представлено описание {{ top_k }} лучших кандидатов для данной вакансии:
         </div>
     </div>
+    {% if selected_vacancy %}
+        <div class="box">
+            <h2>Выбранная вакансия</h2>
+            <div><strong>{{ selected_vacancy.title or "Без названия" }}</strong></div>
+            <div class="muted">
+                {% if selected_vacancy.company %}{{ selected_vacancy.company }}{% endif %}
+                {% if selected_vacancy.experience_level %} • {{ selected_vacancy.experience_level }}{% endif %}
+                {% if selected_vacancy.format %} • {{ selected_vacancy.format }}{% endif %}
+                {% if selected_vacancy.required_years is not none %} • требуемый опыт: {{ selected_vacancy.required_years }} лет{% endif %}
+            </div>
+            <div class="vacancy-preview">{{ selected_vacancy.vacancy_text }}</div>
+        </div>
+    {% endif %}
 
     <div class="llm_response_card">
         <div class="llm_response_header">
             <span>Результат анализа</span>
         </div>
         <div class="llm_response_body">
-            {{ llm_response }}
+            {% for result in llm_response %}
+            <div class="llm_response_card">
+            <div class="llm_response_header">
+
+        Оценка кандидата {{ loop.index }}
+    </div>
+    <div class="llm_response_body">
+        {{ result | safe }}
+    </div>
+</div>
+{% endfor %}
         </div>
     </div>
 
-    <div class="back_btn_cont">
-        <a href="{{ url_for('webstart.start_page') }}" class="back_btn">Новый поиск</a>
-    </div>
+   <div class="back_btn_cont">
+    <a href="/" class="back_btn">Вернуться на главную</a>
+  </div>
 </main>
 
 

@@ -1,66 +1,138 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Загрузка резюме</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 30px auto; line-height: 1.4; }
-        .topbar { margin-bottom: 20px; }
-        .box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #fafafa; }
-        button { margin-top: 12px; padding: 10px 16px; cursor: pointer; }
-        .flash { padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; }
-        .flash.success { background: #eaf7ea; border: 1px solid #b9dfb9; }
-        .flash.error { background: #fdecec; border: 1px solid #efb3b3; }
-        .report { margin-top: 20px; padding: 12px; background: #fff; border: 1px solid #ddd; border-radius: 6px; }
-    </style>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Загрузка резюме. Bluetreasure HR system</title>
 </head>
 <body>
-    <div class="topbar">
-        <a href="{{ url_for('webstart.start_page') }}">← На главную</a>
+  <header>
+    <div class="logo">
+      <img src="../static/gazprom-neft-logo-eng.svg" alt="GazProm Neft Logo">
     </div>
+    <div class="title">Bluetreasure HR system</div>
+  </header>
 
-    <h1>Загрузка резюме</h1>
+  <h1 class="page_title">Загрузка резюме</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="layout">
+    <div>
+      <div class="box">
+        <form method="POST" enctype="multipart/form-data">
+          <div style="margin-bottom: 18px;">
+            <label for="candidate_pdfs"><strong>Выбери PDF резюме</strong></label><br><br>
+
+            <label class="file_upload_label" for="candidate_pdfs">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19
+                         a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+              Выбрать файлы
+            </label>
+
+            <input id="candidate_pdfs" class="hidden_input" type="file"
+                   name="candidate_pdfs" accept=".pdf" multiple>
+
+            <span class="file_name" id="file_name_display">Файлы не выбраны</span>
+          </div>
+
+          <div style="margin-bottom: 18px;">
+            <label for="candidate_texts"><strong>Или вставь одно / несколько резюме текстом</strong></label><br><br>
+            <textarea
+              id="candidate_texts"
+              name="candidate_texts"
+              rows="16"
+              placeholder="Вставь сюда одно резюме или несколько. Если резюме несколько — разделяй их тремя и более пустыми строками."
+            ></textarea>
+          </div>
+
+          <button type="submit" class="submit_btn">
+            Обработать и загрузить в OpenSearch
+          </button>
+        </form>
+      </div>
+
+      {% if report %}
+        <div class="report">
+          <h3>Последний отчет</h3>
+          <div>Загружено: <strong>{{ report.loaded }}</strong></div>
+          <div>Дублей: <strong>{{ report.duplicates }}</strong></div>
+          <div>Ошибок: <strong>{{ report.errors }}</strong></div>
+        </div>
       {% endif %}
-    {% endwith %}
+
+      {% if report and report.error_details %}
+        <div class="report">
+          <h3>Ошибки</h3>
+          <ul>
+            {% for item in report.error_details %}
+              <li><strong>{{ item.file }}</strong>: {{ item.error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
 
     <div class="box">
-        <form method="POST" enctype="multipart/form-data">
-            <label for="candidate_pdfs"><strong>Выбери PDF резюме</strong></label><br><br>
-            <input id="candidate_pdfs" type="file" name="candidate_pdfs" accept=".pdf" multiple>
-            <br>
-            <button type="submit">Загрузить резюме</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px;">
+        <h2 style="margin:0;">Уже загруженные резюме</h2>
+
+        <form action="{{ url_for('webstart.clear_candidates') }}" method="POST" style="margin:0;">
+          <button type="submit" class="submit_btn">Очистить резюме</button>
         </form>
+      </div>
+
+      {% if candidates %}
+        {% for candidate in candidates %}
+          <div class="vacancy-item">
+            <div>
+              <strong>{{ candidate.name or candidate.source_file or candidate._id }}</strong>
+            </div>
+
+            <div class="muted">
+              {% if candidate.contacts and candidate.contacts.location %}
+                {{ candidate.contacts.location }}
+              {% endif %}
+            </div>
+
+            {% if candidate.source_file %}
+              <div class="muted">Файл: {{ candidate.source_file }}</div>
+            {% endif %}
+
+            <div class="muted">id: {{ candidate._id }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="muted">В индексе candidates пока нет документов.</div>
+      {% endif %}
     </div>
+  </div>
 
-    {% if report %}
-        <div class="report">
-            <h3>Последний отчет</h3>
-            <div>Загружено: <strong>{{ report.loaded }}</strong></div>
-            <div>Дублей: <strong>{{ report.duplicates }}</strong></div>
-            <div>Ошибок: <strong>{{ report.errors }}</strong></div>
-        </div>
-    {% endif %}
+  <div class="back_btn_cont">
+    <a href="/" class="back_btn">Вернуться на главную</a>
+  </div>
 
+  <script>
+    document.getElementById('candidate_pdfs').addEventListener('change', function () {
+      const label = document.getElementById('file_name_display');
 
-    {% if report and report.error_details %}
-    <div class="report">
-        <h3>Ошибки</h3>
-        <ul>
-            {% for item in report.error_details %}
-                <li>
-                    <strong>{{ item.file }}</strong>: {{ item.error }}
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
-
-
+      if (this.files.length === 0) {
+        label.textContent = 'Файлы не выбраны';
+      } else if (this.files.length === 1) {
+        label.textContent = this.files[0].name;
+      } else {
+        label.textContent = `Выбрано файлов: ${this.files.length}`;
+      }
+    });
+  </script>
 </body>
 </html>

@@ -1,215 +1,125 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Поиск кандидатов</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1100px;
-            margin: 30px auto;
-            line-height: 1.4;
-        }
-
-        .topbar {
-            margin-bottom: 20px;
-        }
-
-        .box {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 16px;
-            background: #fafafa;
-            margin-bottom: 20px;
-        }
-
-        select, input[type="number"] {
-            padding: 8px;
-            min-width: 280px;
-        }
-
-        button {
-            padding: 10px 16px;
-            cursor: pointer;
-        }
-
-        .flash {
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-        }
-
-        .flash.success {
-            background: #eaf7ea;
-            border: 1px solid #b9dfb9;
-        }
-
-        .flash.error {
-            background: #fdecec;
-            border: 1px solid #efb3b3;
-        }
-
-        .candidate {
-            border-top: 1px solid #e5e5e5;
-            padding: 14px 0;
-        }
-
-        .candidate:first-child {
-            border-top: none;
-        }
-
-        .muted {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .resume {
-            white-space: pre-wrap;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: 8px;
-        }
-
-        .vacancy-preview {
-            white-space: pre-wrap;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: 8px;
-        }
-
-        .score {
-            margin-top: 8px;
-            font-size: 16px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Поиск кандидатов. Bluetreasure HR system</title>
 </head>
 <body>
-    <div class="topbar">
-        <a href="{{ url_for('webstart.start_page') }}">← На главную</a>
-    </div>
+<header>
+  <div class="logo">
+    <img src="../static/gazprom-neft-logo-eng.svg" alt="GazProm Neft Logo">
+  </div>
+  <div class="title">Bluetreasure HR system</div>
+</header>
 
-    <h1>Поиск кандидатов</h1>
+<h1 class="page_title">Поиск кандидатов</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="box">
+  <form method="POST">
+    <div style="margin-bottom: 12px;">
+      <label for="vacancy_id"><strong>Выбери вакансию</strong></label><br><br>
+      <select id="vacancy_id" name="vacancy_id" required>
+        <option value="">-- выбрать вакансию --</option>
+        {% for vacancy in vacancies %}
+          <option value="{{ vacancy._id }}" {% if selected_vacancy_id == vacancy._id %}selected{% endif %}>
+            {{ vacancy.title or "Без названия" }}{% if vacancy.company %} — {{ vacancy.company }}{% endif %}
+          </option>
         {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <div class="box">
-        <form method="POST">
-            <div style="margin-bottom: 12px;">
-                <label for="vacancy_id"><strong>Выбери вакансию</strong></label><br><br>
-                <select id="vacancy_id" name="vacancy_id" required>
-                    <option value="">-- выбрать вакансию --</option>
-                    {% for vacancy in vacancies %}
-                        <option value="{{ vacancy._id }}" {% if selected_vacancy_id == vacancy._id %}selected{% endif %}>
-                            {{ vacancy.title or "Без названия" }}
-                            {% if vacancy.company %} — {{ vacancy.company }}{% endif %}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div style="margin-bottom: 12px;">
-                <label for="top_k"><strong>Сколько кандидатов искать</strong></label><br><br>
-                <input id="top_k" type="number" name="top_k" min="1" max="100" value="20">
-            </div>
-
-            <button type="submit">Найти кандидатов</button>
-        </form>
+      </select>
     </div>
 
-    {% if selected_vacancy %}
-        <div class="box">
-            <h2>Выбранная вакансия</h2>
-            <div><strong>{{ selected_vacancy.title or "Без названия" }}</strong></div>
-            <div class="muted">
-                {% if selected_vacancy.company %}{{ selected_vacancy.company }}{% endif %}
-                {% if selected_vacancy.experience_level %} • {{ selected_vacancy.experience_level }}{% endif %}
-                {% if selected_vacancy.format %} • {{ selected_vacancy.format }}{% endif %}
-                {% if selected_vacancy.required_years is not none %} • требуемый опыт: {{ selected_vacancy.required_years }} лет{% endif %}
-            </div>
-            <div class="vacancy-preview">{{ selected_vacancy.vacancy_text }}</div>
-        </div>
-    {% endif %}
+    <div style="margin-bottom: 12px;">
+      <label for="top_k"><strong>Сколько кандидатов искать</strong></label><br><br>
+      <input id="top_k" type="number" name="top_k" min="1" max="100" value="20">
+    </div>
 
-    {% if search_results is not none %}
-        <div class="box">
-            <h2>Результаты поиска</h2>
+    <button type="submit">Найти кандидатов</button>
+  </form>
+</div>
 
-            {% if search_results %}
-                {% for candidate in search_results %}
-                    <div class="candidate">
-                        <div>
-                            <strong>{{ candidate.name or candidate.source_file or candidate.id }}</strong>
-                        </div>
+{% if selected_vacancy %}
+  <div class="box">
+    <h2>Выбранная вакансия</h2>
+    <div><strong>{{ selected_vacancy.title or "Без названия" }}</strong></div>
 
-                        <div class="muted">
-                            {% if candidate.contacts and candidate.contacts.location %}
-                                • {{ candidate.contacts.location }}
-                            {% endif %}
-                            {% if candidate.experience and candidate.experience.years is not none %}
-                                • опыт: {{ candidate.experience.years }} лет
-                            {% endif %}
-                        </div>
+    <div class="muted">
+      {% if selected_vacancy.company %}{{ selected_vacancy.company }}{% endif %}
+      {% if selected_vacancy.experience_level %} • {{ selected_vacancy.experience_level }}{% endif %}
+      {% if selected_vacancy.format %} • {{ selected_vacancy.format }}{% endif %}
+    </div>
 
-                        {% if candidate.final_score is not none %}
-                            <div class="score">
-                                <strong>Итоговый score: {{ candidate.final_score }}</strong>
-                            </div>
-                        {% endif %}
+    <div class="vacancy-preview">{{ selected_vacancy.vacancy_text }}</div>
+  </div>
+{% endif %}
 
-                        {% if candidate.ranking %}
-                            <div class="muted" style="margin-top: 6px;">
-                                Cosine: {{ candidate.ranking.metrics_breakdown.cosine_similarity }}
-                                • Jaccard: {{ candidate.ranking.metrics_breakdown.jaccard_simple }}
-                                • TF-IDF: {{ candidate.ranking.metrics_breakdown.jaccard_tfidf }}
-                            </div>
+{% if search_results is not none %}
+  <div class="box">
+    <h2>Результаты поиска</h2>
 
-                            <div class="muted" style="margin-top: 4px;">
-                                Требуемый опыт: {{ candidate.ranking.experience.required_years }}
-                                • Опыт кандидата: {{ candidate.ranking.experience.candidate_years }}
-                                • Модификатор: {{ candidate.ranking.experience.applied_modifier }}
-                            </div>
-                        {% endif %}
+    {% if search_results %}
+      {% for candidate in search_results %}
+        <div class="candidate">
+          <div>
+            <strong>{{ candidate.name or candidate.source_file or candidate.id }}</strong>
+          </div>
 
-                        {% if candidate.matched_tags %}
-                            <div class="muted" style="margin-top: 8px;">
-                                <strong>Совпавшие теги:</strong>
-                                {{ candidate.matched_tags | join(", ") }}
-                            </div>
-                        {% endif %}
-
-                        {% if candidate.missed_tags %}
-                            <div class="muted" style="margin-top: 4px;">
-                                <strong>Не хватает:</strong>
-                                {{ candidate.missed_tags | join(", ") }}
-                            </div>
-                        {% endif %}
-
-                        {% if candidate.skills and candidate.skills.tools %}
-                            <div class="muted" style="margin-top: 6px;">
-                                <strong>Навыки кандидата:</strong>
-                                {{ candidate.skills.tools | join(", ") }}
-                            </div>
-                        {% endif %}
-
-                        {% if candidate.resume_text %}
-                            <div class="resume">{{ candidate.resume_text }}</div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="muted">Кандидаты не найдены.</div>
+          <div class="muted">
+            {% if candidate.contacts and candidate.contacts.location %}
+              • {{ candidate.contacts.location }}
             {% endif %}
+          </div>
+
+          {% if candidate.final_score is not none %}
+            <div class="score">
+              <strong>Итоговый score: {{ candidate.final_score }}</strong>
+            </div>
+          {% endif %}
+
+          {% if candidate.ranking %}
+            <div class="muted" style="margin-top: 6px;">
+              Cosine: {{ candidate.ranking.metrics_breakdown.cosine_similarity }}
+              • Jaccard: {{ candidate.ranking.metrics_breakdown.jaccard_simple }}
+              • TF-IDF: {{ candidate.ranking.metrics_breakdown.jaccard_tfidf }}
+            </div>
+          {% endif %}
+
+          {% for tag in candidate.matched_tags %}
+            <span class="tag_matched">{{ tag }}</span>
+          {% endfor %}
+
+          {% for tag in candidate.missed_tags %}
+            <span class="tag_missed">{{ tag }}</span>
+          {% endfor %}
+
+          {% if candidate.skills and candidate.skills.tools %}
+            <div class="muted" style="margin-top: 6px;">
+              <strong>Навыки кандидата:</strong>
+              {{ candidate.skills.tools | join(", ") }}
+            </div>
+          {% endif %}
+
+          {% if candidate.resume_text %}
+            <div class="vacancy-preview">{{ candidate.resume_text }}</div>
+          {% endif %}
         </div>
+      {% endfor %}
+    {% else %}
+      <div class="muted">Кандидаты не найдены.</div>
     {% endif %}
+  </div>
+{% endif %}
+
+<div class="back_btn_cont">
+  <a href="/" class="back_btn">Вернуться на главную</a>
+</div>
 </body>
 </html>

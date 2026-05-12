@@ -2,27 +2,22 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Bluetreasure</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; line-height: 1.4; }
-        h1 { margin-bottom: 24px; }
-        .menu { display: grid; gap: 12px; }
-        .card {
-            display: block;
-            padding: 16px 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #111;
-            background: #fafafa;
-        }
-        .card:hover { background: #f0f0f0; }
-        .card-title { font-weight: bold; margin-bottom: 6px; }
-    </style>
+    <title>Bluetreasure HR system</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+
 </head>
 <body>
-    <h1>Bluetreasure</h1>
-
+    <header>
+    <div class="logo">
+        <img src="../static/gazprom-neft-logo-eng.svg" alt="GazProm Neft Logo">
+    </div>
+    <div class="title">Bluetreasure HR system</div>
+</header>
+ <div class="main_text_block">
+        <div class="main_text">
+            Выберете пункт меню
+        </div>
+    </div>
     <div class="menu">
         <a class="card" href="{{ url_for('webstart.vacancies_page') }}">
             <div class="card-title">База вакансий</div>
@@ -37,6 +32,11 @@
         <a class="card" href="{{ url_for('webstart.search_page') }}">
             <div class="card-title">Поиск кандидатов</div>
             <div>Выбор вакансии из базы и поиск top-N кандидатов.</div>
+        </a>
+
+        <a class="card" href="{{ url_for('webstart.best_candidates') }}">
+            <div class="card-title">Выбор лучших кандидатов</div>
+            <div>Выбор вакансии из базы и запрос к LLM для выбора лучших</div>
         </a>
     </div>
 </body>

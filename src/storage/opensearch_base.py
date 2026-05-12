@@ -9,9 +9,15 @@ def create_index_if_not_exists(client, index_name: str, mapping: dict) -> None:
 def document_exists(client, index_name: str, doc_id: str) -> bool:
     return client.exists(index=index_name, id=doc_id)
 
+def delete_index_if_exists(client, index_name: str) -> bool:
+    if client.indices.exists(index=index_name):
+        client.indices.delete(index=index_name)
+        return True
+    return False
+
 
 def index_document(client, index_name: str, doc_id: str, doc: dict) -> None:
-    client.index(index=index_name, id=doc_id, body=doc)
+    client.index(index=index_name, id=doc_id, body=doc, refresh="wait_for")
 
 
 def get_document_by_id(client, index_name: str, doc_id: str) -> dict | None:
@@ -69,7 +75,7 @@ def bulk_index_documents(client, docs: dict[str, dict], index_name: str) -> int:
     if not actions:
         return 0
 
-    helpers.bulk(client, actions)
+    helpers.bulk(client, actions, refresh="wait_for")
     return len(actions)
 
 

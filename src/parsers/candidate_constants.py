@@ -37,6 +37,13 @@ KNOWN_MULTIWORD_SKILLS = [
     "Английский язык",
     "Django Rest Framework",
     "Django Framework",
+    "Machine Learning",
+    "Deep Learning",
+    "Computer Vision",
+    "Natural Language Processing",
+    "Prompt Engineering",
+    "Feature Engineering",
+    "A/B Testing",
 ]
 
 TAIL_END_MARKERS = (
