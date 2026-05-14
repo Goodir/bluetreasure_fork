@@ -2,12 +2,24 @@ import requests
 
 url="http://92.39.53.155:8000/v1/chat/completions"
 
+
+def get_candidate_title(candidate: dict) -> str:
+    name = candidate.get("name")
+    source_file = candidate.get("source_file") or candidate.get("id") or "unknown_file"
+
+    if name:
+        return f"{name} — {source_file}"
+
+    return source_file
+
 def request_llm_final(vacancy, candidates):
     llm_response_list = []
-    for i, candidate in enumerate(candidates, start=1):
-        cand_id = candidate.get("id", "")
+
+    for candidate in candidates:
+        candidate_title = get_candidate_title(candidate)
+
         cand_text = candidate.get("resume_text", "")
-        prompt = str(cand_id) + ": " + cand_text
+        prompt = f"Кандидат: {candidate_title}\n\n{cand_text}"
 
         system_prompt = """Ты опытный HR-специалист с 10-летним стажем подбора технических специалистов.
         Твоя задача — объективно оценить соответствие кандидата вакансии.
@@ -69,7 +81,11 @@ def request_llm_final(vacancy, candidates):
 
         response = requests.post(url, json=data)
         final_response = response.json()["choices"][0]["message"]["content"]
-        llm_response_list.append(final_response)
+
+        llm_response_list.append({
+            "candidate_title": candidate_title,
+            "response": final_response,
+        })
     return llm_response_list
 
 

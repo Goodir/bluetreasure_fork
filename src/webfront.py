@@ -24,10 +24,16 @@ webstart = Blueprint("webstart", __name__)
 r = redis.Redis(host="redis", port=6379, decode_responses=True)
 
 
-def render_llm_results(llm_results: list[str]) -> list[str]:
+def render_llm_results(llm_results: list[dict]) -> list[dict]:
     return [
-        markdown.markdown(text, extensions=["nl2br", "tables"])
-        for text in llm_results
+        {
+            "candidate_title": item["candidate_title"],
+            "response_html": markdown.markdown(
+                item["response"],
+                extensions=["nl2br", "tables"]
+            )
+        }
+        for item in llm_results
     ]
 
 

@@ -33,25 +33,25 @@
         </div>
     {% endif %}
 
-    <div class="llm_response_card">
-        <div class="llm_response_header">
-            <span>Результат анализа</span>
-        </div>
-        <div class="llm_response_body">
-            {% for result in llm_response %}
-            <div class="llm_response_card">
-            <div class="llm_response_header">
-
-        Оценка кандидата {{ loop.index }}
+<div class="llm_response_card">
+    <div class="llm_response_header">
+        <span>Результат анализа</span>
     </div>
+
     <div class="llm_response_body">
-        {{ result | safe }}
+        {% for item in llm_response %}
+            <div class="llm_response_card">
+                <div class="llm_response_header">
+                    <span>{{ item.candidate_title }}</span>
+                </div>
+
+                <div class="llm_response_body">
+                    {{ item.response_html | safe }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
-{% endfor %}
-        </div>
-    </div>
-
    <div class="back_btn_cont">
     <a href="/" class="back_btn">Вернуться на главную</a>
   </div>
